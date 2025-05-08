@@ -1,0 +1,109 @@
+{% extends "base.html" %} {% block page %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-danger">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+<div>
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title">Highlights</h5>
+          <p class="card-text">Total Net Worth: {{ net_worth}}</p>
+          <p class="card-text">Total Invested: {{ invested}}</p>
+          <p class="card-text">Total Gains/Loss: {{ gain_loss}}</p>
+        </div>
+      </div>
+      <br>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Investment Type</th>
+        <th scope="col">Name</th>
+        <th scope="col">Invested Amount</th>
+        <th scope="col">Current Value</th>
+        <th scope="col">Gain/Loss</th>
+        <th scope="col">Purchase Date</th>
+        <th scope="col">Notes</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <form method="post" action="/investments">
+          {% csrf_token %}
+          <td></td>
+          <td>
+            <select
+              id="inputState"
+              class="form-control"
+              name="inv-type"
+              required
+            >
+              <option value="" selected disabled hidden>Choose...</option>
+              <option>Stock</option>
+              <option>Mutual Fund</option>
+              <option>Crypto</option>
+              <option>Real Estate</option>
+              <option>Gold/Silver</option>
+            </select>
+          </td>
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              id=""
+              name="inv-name"
+              required
+            />
+          </td>
+          <td>
+            <input
+              type="number"
+              class="form-control"
+              id=""
+              name="inv-amt"
+              required
+            />
+          </td>
+          <td>
+            <input type="number" class="form-control" id="" name="curr-val" />
+          </td>
+          <td>
+            <input
+              type="text"
+              class="form-control"
+              id=""
+              placeholder="Auto Calculated"
+              disabled
+            />
+          </td>
+          <td>
+            <input
+              type="date"
+              class="form-control"
+              id=""
+              name="p-date"
+              required
+            />
+          </td>
+          <td><input type="text" class="form-control" id="" name="notes" /></td>
+          <td><button type="submit" class="btn btn-primary">Submit</button></td>
+        </form>
+      </tr>
+      {% for data in investment_data %}
+      <tr>
+        <td ></td>
+        <td>{{ data.investment_type}}</td>
+        <td>{{ data.name}}</td>
+        <td>{{ data.invested_amount}}</td>
+        <td>{{ data.current_value}}</td>
+        <td>{{ data.gain_loss }} {{ data.gain_loss_percent }}%</td>
+        <td>{{ data.purchase_date}}</td>
+        <td>{{ data.notes}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+ {% endblock %}
