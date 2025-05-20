@@ -1,19 +1,108 @@
-{% extends "base.html" %} {% block page %}
-{% if messages %}
-  {% for message in messages %}
-    <div class="alert alert-danger">{{ message }}</div>
-  {% endfor %}
+{% extends "base.html" %} {% block page %} 
+{% if messages %} 
+{% for message in messages %}
+<div class="alert alert-danger">{{ message }}</div>
+{% endfor %} 
 {% endif %}
 <div>
-    <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title">Highlights</h5>
-          <p class="card-text">Total Net Worth: {{ net_worth}}</p>
-          <p class="card-text">Total Invested: {{ invested}}</p>
-          <p class="card-text">Total Gains/Loss: {{ gain_loss}}</p>
+  {% if not investment_data %}
+  <h2 class="text-center">Add your investments data to get Insights on your investments!</h2>
+  {% else %}
+  
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col">
+        <div class="row">
+            <div class="col m-2 border">
+                <p class="card-text">Total Net Worth: </p>
+                <h4>₹ {{ net_worth}}</h4>
+            </div>
+            <div class="col m-2 border">
+                <p class="card-text">Total Gains/Loss: </p>
+                <h4>₹ {{ gain_loss}}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col m-2 border">
+                <p class="card-text">Total Invested: </p>
+                <h4>₹ {{ invested}}</h4>
+            </div>
+            <div class="col m-2 border">
+                <p class="card-text">Total Returns: </p>
+                <h4>₹ {{ total_current_value }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="card m-2">
+                <div class="card-body">
+                  {% if profit %}
+                  <div class="card-footer text-success">
+                      <p class="card-text">In profit portfolio</p>
+                    </div>
+                  {% else %}
+                  <div class="card-footer text-danger">
+                  <p class="card-text">Portfolio in loss!</p>
+              </div>
+                  {% endif %}
+                </div>
+              </div>
         </div>
       </div>
-      <br>
+      <div class="col">
+        <div class="card m-2" style="width: 18rem">
+          <div class="card-body">
+            <h5 class="card-title">Diversification Insight</h5>
+            {% for data in DI%}
+            <p class="card-text">{{ data.investment_type }}: ₹ {{ data.total_invested }} {{data.total_invested_perc}} %</p>
+            {% endfor %}
+            {% if wellDiversified %}
+            <div class="card-footer text-success">
+                <p class="card-text">Well-diversified portfolio</p>
+              </div>
+            {% else %}
+            <div class="card-footer text-danger">
+            <p class="card-text">Portfolio lacks diversification!</p>
+        </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col">
+            <div class="card m-2" style="width: 18rem">
+                <div class="card-body">
+                  <h5 class="card-title"><button type="button" class="btn" data-toggle="tooltip" data-placement="right" title="Purchased less than a year ago">
+                    Short Term Holdings
+                  </button></h5>
+                  {% if not short_term_holdings %}
+                  <p>No Short term holdings yet</p>
+                  {% else %}
+                  {% for data in short_term_holdings%}
+                  <p class="card-text">{{data.name}} ({{ data.investment_type }})  </p>
+                  {% endfor %}
+                  {% endif %}
+                </div>
+            </div>
+      </div>
+      <div class="col">
+        <div class="card m-2" style="width: 18rem">
+            <div class="card-body" >
+              <h5 class="card-title" > <button type="button" class="btn" data-toggle="tooltip" data-placement="right" title="Purchased more than a year ago">
+                Long Term Holdings
+              </button></h5>
+              {% if not long_term_holdings %}
+              <p>No Long term holdings yet</p>
+              {% else %}
+              {% for data in long_term_holdings%}
+              <p class="card-text">{{data.name}} ({{ data.investment_type }}) </p>
+              {% endfor %}
+              {% endif %}
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <br />
   <table class="table table-hover">
     <thead>
       <tr>
@@ -45,7 +134,7 @@
               <option>Mutual Fund</option>
               <option>Crypto</option>
               <option>Real Estate</option>
-              <option>Gold/Silver</option>
+              <option>Gold</option>
             </select>
           </td>
           <td>
@@ -63,6 +152,7 @@
               class="form-control"
               id=""
               name="inv-amt"
+              min="1"
               required
             />
           </td>
@@ -88,22 +178,45 @@
             />
           </td>
           <td><input type="text" class="form-control" id="" name="notes" /></td>
-          <td><button type="submit" class="btn btn-primary">Submit</button></td>
+          <td><button type="submit" class="btn btn-success">Submit</button></td>
         </form>
       </tr>
       {% for data in investment_data %}
       <tr>
-        <td ></td>
+        <td></td>
         <td>{{ data.investment_type}}</td>
         <td>{{ data.name}}</td>
-        <td>{{ data.invested_amount}}</td>
-        <td>{{ data.current_value}}</td>
-        <td>{{ data.gain_loss }} {{ data.gain_loss_percent }}%</td>
+        <td>₹ {{ data.invested_amount}}</td>
+        <td>₹ {{ data.current_value}}</td>
+        {% if data.gain_loss > 0 %}
+        <td style="color: darkgreen">
+          {{ data.gain_loss }} {{ data.gain_loss_percent }}%
+        </td>
+        {% else %}
+        <td style="color: brown">
+          {{ data.gain_loss }} {{ data.gain_loss_percent }}%
+        </td>
+        {% endif %}
         <td>{{ data.purchase_date}}</td>
         <td>{{ data.notes}}</td>
+        <form method="post" action="{% url 'delete_investment' data.id %}" >
+            {% csrf_token %}
+        <td><!-- <button type="submit" class="btn btn-danger">Delete</button>--->
+            <div class="btn-group dropleft">
+                <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Delete
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <button class="dropdown-item text-danger" type="submit" href="#">Delete</button>
+                  <a class="dropdown-item" href="#">Cancel</a>
+                </div>
+              </div>
+        </td>
+        
+        </form>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
- {% endblock %}
+{% endblock %}

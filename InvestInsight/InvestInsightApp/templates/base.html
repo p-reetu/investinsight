@@ -10,9 +10,18 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
+    
   </head>
   <body>
-    <nav class="navbar navbar-light bg-light justify-content-between">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<!-- Popper.js (needed for Bootstrap 4 dropdowns) -->
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <nav class="navbar navbar-light bg-light justify-content-between sticky-top">
       <a class="navbar-brand">Invest Insight</a>
       <form class="form-inline" method="post" action="/logout/">
         {% csrf_token %}

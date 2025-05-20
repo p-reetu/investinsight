@@ -1,9 +1,11 @@
 from django.contrib import messages 
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import Investments
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from datetime import date, datetime
+from django.db.models import Sum
 
 def registerView(request):
     if request.method == "POST":
@@ -46,16 +48,56 @@ def InvestmentView(request):
         curr_val  = request.POST.get('curr-val')
         p_date = request.POST.get('p-date')
         notes = request.POST.get('notes')
-        if investment_type == "":
-            messages.error(request, "Please select a valid investment type.")
+        hasErrors = False
+        if int(investment_amt) <= 0:
+            messages.error(request, "Please add a valid investment amount.")
+            hasErrors = True
+        if date.today() < datetime.strptime(p_date, "%Y-%m-%d").date():
+            messages.error(request, "Please add past purchase date")
+            hasErrors = True
+        if hasErrors:
             return redirect("investments")
         investment = Investments.objects.create(investor=request.user,investment_type=investment_type,name=investment_name,invested_amount=investment_amt,purchase_date=p_date,current_value=curr_val,notes=notes)
-    investment_data = Investments.objects.filter(investor=request.user)
+    investment_data = Investments.objects.filter(investor=request.user).order_by('investment_type','-current_value')
     net = 0
     invested = 0
+    total_current_value = 0
+    short_term_holdings = []
+    long_term_holdings = []
     for inv in investment_data:
         inv.gain_loss = inv.current_value - inv.invested_amount
-        inv.gain_loss_percent = round( (inv.invested_amount/inv.current_value)*100,2)
+        inv.gain_loss_percent = round((inv.gain_loss / inv.invested_amount) * 100, 2)
+        if (date.today()-inv.purchase_date).days>=365:
+            long_term_holdings.append(inv)
+        else:
+            short_term_holdings.append(inv)
         net += inv.current_value
         invested += inv.invested_amount
-    return render(request,"dashboard.html",{"investment_data":investment_data,"net_worth":net,"invested":invested,"gain_loss":net-invested})
+        total_current_value += inv.current_value
+
+    #Diversification Insight
+    DI = Investments.objects.filter(investor=request.user).values('investment_type').annotate(
+        total_invested=Sum('invested_amount'),
+        total_current=Sum('current_value')
+    )
+    wellDiversified = True
+    for item in DI:
+        item['total_invested_perc'] = round((item['total_invested'] / invested) * 100, 2)
+        if item['total_invested_perc']>=60:
+            wellDiversified = False
+    return render(request,"dashboard.html",{
+        "investment_data":investment_data,
+        "net_worth":net,"invested":invested,
+        "total_current_value":total_current_value,
+        "gain_loss":net-invested,
+        "DI":DI,"wellDiversified":wellDiversified,
+        "profit":net-invested>0,
+        "short_term_holdings":short_term_holdings,
+        "long_term_holdings":long_term_holdings
+        })
+
+@login_required
+def InvestmentDeletionView(request,id):
+    investment = get_object_or_404(Investments, id=id, investor=request.user)
+    investment.delete()
+    return redirect("investments")
