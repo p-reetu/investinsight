@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yts4^0sv17uwi6xdgbf*bb7#)co8d3r$%#2icq*&8t)i@^$*fm'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -80,11 +80,11 @@ WSGI_APPLICATION = 'InvestInsight.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'investinsight',
-        'HOST' : '127.0.0.1',
+        'NAME': config('DB_NAME'),
+        'HOST' : 'db',
         'PORT' : '5432',
-        'USER' : 'admin',
-        'PASSWORD' : 'secret',
+        'USER' : config('DB_USER'),
+        'PASSWORD' : config('DB_PASSWORD'),
     }
 }
 
