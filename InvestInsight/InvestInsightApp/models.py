@@ -10,3 +10,7 @@ class Investments(models.Model):
     purchase_date = models.DateField()
     current_value = models.DecimalField(max_digits=15, decimal_places=2)
     notes = models.TextField(null=True, blank=True)
+
+class GoldRates(models.Model):
+    date = models.DateField(auto_now_add=True)
+    rate = models.DecimalField(max_digits=15, decimal_places=2)
