@@ -3,12 +3,14 @@ version: "3.9"
 services:
   web:
     build: .
+    command: python manage.py createsuperuser --noinput
     entrypoint: >
       sh -c "python manage.py makemigrations &&
             python manage.py migrate &&
             gunicorn InvestInsight.wsgi:application --bind 0.0.0.0:8000"
     volumes:
       - .:/app
+      - ./staticfiles:/app/staticfiles
     ports:
       - "8000:8000"
     depends_on:
@@ -22,8 +24,32 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5434:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    env_file:
+      - InvestInsight/.env
+  redis:
+    image: redis:7
+  celery:
+    build: .
+    command: celery -A InvestInsight worker --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+      - redis
+    env_file:
+      - InvestInsight/.env
+  celery-beat:
+    build: .
+    command: celery -A InvestInsight beat --loglevel=info
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+      - redis
     env_file:
       - InvestInsight/.env
 
