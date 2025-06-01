@@ -1,11 +1,14 @@
+from decimal import Decimal
+import json
 from django.contrib import messages 
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Investments
+from .models import Investments, GoldRates
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from datetime import date, datetime
 from django.db.models import Sum
+from django.core.serializers.json import DjangoJSONEncoder
 
 def registerView(request):
     if request.method == "POST":
@@ -45,7 +48,12 @@ def InvestmentView(request):
         investment_type  = request.POST.get('inv-type')
         investment_name  = request.POST.get('inv-name')
         investment_amt  = request.POST.get('inv-amt')
-        curr_val  = request.POST.get('curr-val')
+        if investment_type == "Gold":
+            curr_per_gram = GoldRates.objects.all().order_by('-date').first()
+            investment_grams = Decimal(request.POST.get('gram-field'))
+            curr_val = curr_per_gram.rate*investment_grams
+        else:
+            curr_val  = request.POST.get('curr-val')
         p_date = request.POST.get('p-date')
         notes = request.POST.get('notes')
         hasErrors = False
@@ -85,6 +93,14 @@ def InvestmentView(request):
         item['total_invested_perc'] = round((item['total_invested'] / invested) * 100, 2)
         if item['total_invested_perc']>=60:
             wellDiversified = False
+
+    #goldrate chart
+    goldrates = GoldRates.objects.all().order_by('date')
+    dates = []
+    rates = []
+    for ele in goldrates:
+        dates.append(ele.date.strftime("%m-%d-%Y"))
+        rates.append(float(ele.rate))
     return render(request,"dashboard.html",{
         "investment_data":investment_data,
         "net_worth":net,"invested":invested,
@@ -93,7 +109,9 @@ def InvestmentView(request):
         "DI":DI,"wellDiversified":wellDiversified,
         "profit":net-invested>0,
         "short_term_holdings":short_term_holdings,
-        "long_term_holdings":long_term_holdings
+        "long_term_holdings":long_term_holdings,
+        "gold_dates":json.dumps(dates, cls=DjangoJSONEncoder),
+        "gold_rates":json.dumps(rates)
         })
 
 @login_required

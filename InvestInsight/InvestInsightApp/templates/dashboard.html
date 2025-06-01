@@ -68,6 +68,7 @@
         </div>
       </div>
       <div class="col">
+        <div class="col">
             <div class="card m-2" style="width: 18rem">
                 <div class="card-body">
                   <h5 class="card-title"><button type="button" class="btn" data-toggle="tooltip" data-placement="right" title="Purchased less than a year ago">
@@ -99,6 +100,14 @@
             </div>
         </div>
       </div>
+      </div>
+      <div class="col">
+        <div class="m-3">
+          <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+          <h4 class="text-center">Gold Rates</h4>
+        </div>
+        
+      </div>
     </div>
   </div>
   {% endif %}
@@ -124,17 +133,18 @@
           <td></td>
           <td>
             <select
-              id="inputState"
+              id="invtype"
               class="form-control"
               name="inv-type"
+              onchange="investmentTypeHandler()"
               required
             >
               <option value="" selected disabled hidden>Choose...</option>
-              <option>Stock</option>
-              <option>Mutual Fund</option>
-              <option>Crypto</option>
-              <option>Real Estate</option>
-              <option>Gold</option>
+              <option value="Stock">Stock</option>
+              <option value="MF">Mutual Fund</option>
+              <option value="Crypto">Crypto</option>
+              <option value="RE">Real Estate</option>
+              <option value="Gold">Gold</option>
             </select>
           </td>
           <td>
@@ -155,9 +165,19 @@
               min="1"
               required
             />
+            <input
+              type="number"
+              class="form-control"
+              id="gram-field"
+              name="gram-field"
+              min="0"
+              style="display: none;"
+              placeholder="grams"
+              required
+            />
           </td>
           <td>
-            <input type="number" class="form-control" id="" name="curr-val" />
+            <input type="number" class="form-control" id="curr-val" name="curr-val" />
           </td>
           <td>
             <input
@@ -219,4 +239,53 @@
     </tbody>
   </table>
 </div>
+<script>
+  var investmentTypeHandler = () => {
+    var investmentType = document.getElementById("invtype").value;
+    var gramField = document.getElementById("gram-field");
+    var currentValue = document.getElementById("curr-val");
+    console.log("something" + investmentType);
+    if (investmentType == "Gold") {
+      gramField.style.display = "block";
+      currentValue.disabled = true;
+    } else {
+      gramField.style.display = "none";
+      currentValue.disabled = false;
+    }
+  };
+  const xValues = `{{ gold_dates|safe }}`.slice(1,-1).split(',');
+  const yValues = '{{ gold_rates }}'.slice(1,-1).split(',');
+  console.log(xValues);
+console.log(yValues);
+new Chart("myChart", {
+  type: "line",
+  data: {
+    labels: xValues,
+    datasets: [{
+      fill: false,
+      lineTension: 0,
+      backgroundColor: "rgba(0,0,255,1.0)",
+      borderColor: "gold",
+      data: yValues
+    }]
+  },
+  options: {
+    legend: {display: false},
+    scales: {
+      x: {
+          title: {
+            display: true,
+            text: 'Date'
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Rate (₹)'
+          }
+        }
+    }
+  }
+});
+</script>
 {% endblock %}
