@@ -248,8 +248,10 @@
     if (investmentType == "Gold") {
       gramField.style.display = "block";
       currentValue.disabled = true;
+      gramField.value = null;
     } else {
       gramField.style.display = "none";
+      gramField.value = 0;
       currentValue.disabled = false;
     }
   };
@@ -265,7 +267,7 @@ new Chart("myChart", {
       fill: false,
       lineTension: 0,
       backgroundColor: "rgba(0,0,255,1.0)",
-      borderColor: "gold",
+      borderColor: "black",
       data: yValues
     }]
   },
