@@ -8,7 +8,7 @@
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1">Amount</label>
-            <input type="number" class="form-control" id="" name="expense-amt" required>
+            <input type="number" class="form-control" min="1" id="" name="expense-amt" required>
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1">Name</label>
@@ -28,6 +28,25 @@
     </form>
     <br/>
     <div class="row">
+        <div class="col-lg-3 col-sm-6 m-2 p-2 bg-info">
+            <p>Monthly Total</p>
+            <h2>₹ {{monthly_total}}</h2>
+        </div>
+        <div class="col m-2 p-2 bg-secondary">
+            <p>Transport Total</p>
+            <h2>₹ {{transport_total}}</h2>
+        </div>
+        <div class="col m-2 p-2 bg-light">
+            <p>Food Total</p>
+            <h2>₹ {{food_total}}</h2>
+        </div>
+        <div class="col m-2 p-2 bg-dark text-white">
+            <p>Shopping Total</p>
+            <h2>₹ {{shopping_total}}</h2>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
         <table class="table table-hover">
   <thead>
     <tr>
@@ -42,7 +61,7 @@
     <tr>
       <td>{{data.expense_date}}</td>
       <td>{{data.expense_name}}</td>
-      <td>{{data.expense_amt}}</td>
+      <td>₹ {{data.expense_amt}}</td>
       <td>{{data.expense_type}}</td>
     </tr>
     {% endfor %}

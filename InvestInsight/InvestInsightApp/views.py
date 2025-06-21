@@ -129,5 +129,12 @@ def ExpenseView(request):
         expense_name  = request.POST.get('expense-name')
         expense_type  = request.POST.get('expense-type')
         expense = Expense.objects.create(user=request.user,expense_date=expense_date,expense_amt=expense_amt,expense_name=expense_name,expense_type=expense_type)
-    expense_data = Expense.objects.all().order_by('-expense_date')
-    return render(request,"expense.html",{"expense_data":expense_data})
+    
+    expense_data = Expense.objects.filter(user=request.user).order_by('-expense_date')
+    monthly_expense_data = expense_data.filter(expense_date__month=datetime.now().month)
+    monthly_total = monthly_expense_data.aggregate(Sum('expense_amt'))['expense_amt__sum'] or 0
+    transport_total = monthly_expense_data.filter(expense_type="Transport").aggregate(Sum('expense_amt'))['expense_amt__sum'] or 0
+    food_total = monthly_expense_data.filter(expense_type="Food").aggregate(Sum('expense_amt'))['expense_amt__sum'] or 0
+    shopping_total = monthly_expense_data.filter(expense_type="Shopping").aggregate(Sum('expense_amt'))['expense_amt__sum'] or 0
+    
+    return render(request,"expense.html",{"expense_data":expense_data, "monthly_total":monthly_total, "transport_total":transport_total,"food_total":food_total,"shopping_total":shopping_total})
