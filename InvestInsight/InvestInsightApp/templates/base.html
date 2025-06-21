@@ -23,7 +23,11 @@
 <!-- Bootstrap JS -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <nav class="navbar navbar-light bg-light justify-content-between sticky-top">
+      
       <a class="navbar-brand">Invest Insight</a>
+       <button class="btn btn-link ml-0"><a class="nav-item" href="/investments">Investments</a></button>
+      <button class="btn btn-link"><a class="nav-item" href="/expenses">Expenses</a></button>
+      
       <form class="form-inline" method="post" action="/logout/">
         {% csrf_token %}
         <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Logout</button>

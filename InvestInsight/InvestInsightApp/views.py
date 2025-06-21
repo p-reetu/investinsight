@@ -2,7 +2,7 @@ from decimal import Decimal
 import json
 from django.contrib import messages 
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Investments, GoldRates
+from .models import Investments, GoldRates, Expense
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -120,3 +120,14 @@ def InvestmentDeletionView(request,id):
     investment = get_object_or_404(Investments, id=id, investor=request.user)
     investment.delete()
     return redirect("investments")
+
+@login_required
+def ExpenseView(request):
+    if request.method == "POST":
+        expense_date  = request.POST.get('expense-date')
+        expense_amt  = request.POST.get('expense-amt')
+        expense_name  = request.POST.get('expense-name')
+        expense_type  = request.POST.get('expense-type')
+        expense = Expense.objects.create(user=request.user,expense_date=expense_date,expense_amt=expense_amt,expense_name=expense_name,expense_type=expense_type)
+    expense_data = Expense.objects.all().order_by('-expense_date')
+    return render(request,"expense.html",{"expense_data":expense_data})

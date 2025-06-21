@@ -14,3 +14,10 @@ class Investments(models.Model):
 class GoldRates(models.Model):
     date = models.DateField(auto_now_add=True)
     rate = models.DecimalField(max_digits=15, decimal_places=2)
+
+class Expense(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    expense_date  = models.DateField()
+    expense_amt  = models.DecimalField(max_digits=15, decimal_places=2)
+    expense_name  = models.CharField(max_length=255)
+    expense_type  = models.CharField(max_length=100)
