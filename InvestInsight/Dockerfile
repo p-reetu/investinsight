@@ -18,4 +18,5 @@ COPY . .
 # Expose the port
 EXPOSE 8000
 
-# Command is provided in docker-compose
+# Command
+CMD ["gunicorn", "InvestInsight.wsgi:application", "--bind", "0.0.0.0:8000"]
