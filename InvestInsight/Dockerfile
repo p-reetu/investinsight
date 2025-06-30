@@ -19,4 +19,6 @@ COPY . .
 EXPOSE 8000
 
 # Command
-CMD ["gunicorn", "InvestInsight.wsgi:application", "--bind", "0.0.0.0:8000"]
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+ENTRYPOINT ["sh", "/app/start.sh"]
