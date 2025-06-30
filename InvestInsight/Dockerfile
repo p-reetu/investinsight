@@ -15,9 +15,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project code
 COPY . .
 
-RUN python manage.py collectstatic --noinput
-RUN python manage.py migrate --noinput
-
 # Expose the port
 EXPOSE 8000
 
