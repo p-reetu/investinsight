@@ -10,6 +10,9 @@ from datetime import date, datetime
 from django.db.models import Sum
 from django.core.serializers.json import DjangoJSONEncoder
 
+def homeView(request):
+    return render(request,"landing.html")
+
 def registerView(request):
     if request.method == "POST":
         username = request.POST.get('username')
