@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block page %}
-<h1>Register Page</h1>
+<div class="container">
+  <h2 class="mt-4">Sign Up!</h2>
 {% if messages %}
   {% for message in messages %}
     <div class="alert alert-danger">{{ message }}</div>
@@ -43,7 +44,8 @@
       required
     />
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="submit" class="btn btn-primary mb-3">Submit</button>
   <p>Already have account?<a href="/login"> login here</a></p>
 </form>
+</div>
 {% endblock %}
