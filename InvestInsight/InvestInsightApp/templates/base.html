@@ -16,24 +16,39 @@
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 
-<!-- Popper.js (needed for Bootstrap 4 dropdowns) -->
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <!-- Popper.js (needed for Bootstrap 4 dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
-<!-- Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <nav class="navbar navbar-light bg-light justify-content-between sticky-top">
+    <!-- Bootstrap JS -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light justify-content-between sticky-top">
       
       <a class="navbar-brand"><i>Invest &#8599 Insight</i></a>
-       <button class="btn btn-link ml-0"><a class="nav-item" href="/investments">Investments</a></button>
-      <button class="btn btn-link"><a class="nav-item" href="/expenses">Expenses</a></button>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+<ul class="navbar-nav mr-auto">
+      <li class="nav-item ">
+        <a class="nav-link" href="/investments">Investments</a>
+      </li>
+<li class="nav-item">
+        <a class="nav-link" href="/expenses">Expenses</a>
+      </li>
+      </ul>
       {% if user.is_authenticated %}
-      <form class="form-inline" method="post" action="/logout/">
+      <form class="form-inline my-2 my-lg-0" method="post" action="/logout/">
         {% csrf_token %}
         <button class="btn btn-outline-secondary my-2 my-sm-0" type="submit">Logout</button>
       </form>
+
       {% endif %}
+</div>
     </nav>
     {% block page %} {% endblock %}
   </body>
