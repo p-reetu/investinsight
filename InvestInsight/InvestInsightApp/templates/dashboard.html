@@ -6,7 +6,10 @@
 {% endif %}
 <div>
   {% if not investment_data %}
-  <h2 class="text-center">Add your investments data to get Insights on your investments!</h2>
+  <div class="container mt-4">
+    <h2 class="text-center">Add your investments data to get Insights on your investments!</h2>
+  </div>
+  
   {% else %}
   
   <div class="container-fluid">
@@ -33,6 +36,7 @@
             </div>
         </div>
         <div class="row">
+          <div class="col">
             <div class="card m-2">
                 <div class="card-body">
                   {% if profit %}
@@ -46,6 +50,7 @@
                   {% endif %}
                 </div>
               </div>
+          </div>
         </div>
       </div>
       <div class="col">
@@ -101,6 +106,7 @@
         </div>
       </div>
       </div>
+      {% if has_gold_inv %}
       <div class="col">
         <div class="m-3">
           <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
@@ -108,14 +114,15 @@
         </div>
         
       </div>
+      {% endif %}
     </div>
   </div>
   {% endif %}
   <br />
+<div class="table-responsive">
   <table class="table table-hover">
     <thead>
       <tr>
-        <th scope="col">#</th>
         <th scope="col">Investment Type</th>
         <th scope="col">Name</th>
         <th scope="col">Invested Amount</th>
@@ -130,7 +137,6 @@
       <tr>
         <form method="post" action="/investments">
           {% csrf_token %}
-          <td></td>
           <td>
             <select
               id="invtype"
@@ -203,7 +209,6 @@
       </tr>
       {% for data in investment_data %}
       <tr>
-        <td></td>
         <td>{{ data.investment_type}}</td>
         <td>{{ data.name}}</td>
         <td>₹ {{ data.invested_amount}}</td>
@@ -238,6 +243,7 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
 </div>
 <script>
   var investmentTypeHandler = () => {

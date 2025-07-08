@@ -14,6 +14,8 @@ def homeView(request):
     return render(request,"landing.html")
 
 def registerView(request):
+    if request.user.is_authenticated:
+        return redirect('investments')
     if request.method == "POST":
         username = request.POST.get('username')
         email = request.POST.get('email')
@@ -28,6 +30,8 @@ def registerView(request):
     return render(request,"register.html")
 
 def loginView(request):
+    if request.user.is_authenticated:
+        return redirect('investments')
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -75,6 +79,7 @@ def InvestmentView(request):
     total_current_value = 0
     short_term_holdings = []
     long_term_holdings = []
+    has_gold_inv =  False
     for inv in investment_data:
         inv.gain_loss = inv.current_value - inv.invested_amount
         inv.gain_loss_percent = round((inv.gain_loss / inv.invested_amount) * 100, 2)
@@ -85,6 +90,8 @@ def InvestmentView(request):
         net += inv.current_value
         invested += inv.invested_amount
         total_current_value += inv.current_value
+        if inv.investment_type == 'Gold':
+            has_gold_inv = True
 
     #Diversification Insight
     DI = Investments.objects.filter(investor=request.user).values('investment_type').annotate(
@@ -104,7 +111,8 @@ def InvestmentView(request):
     for ele in goldrates:
         dates.append(ele.date.strftime("%m-%d-%Y"))
         rates.append(float(ele.rate))
-    return render(request,"dashboard.html",{
+    
+    context = {
         "investment_data":investment_data,
         "net_worth":net,"invested":invested,
         "total_current_value":total_current_value,
@@ -115,8 +123,10 @@ def InvestmentView(request):
         "short_term_holdings":short_term_holdings,
         "long_term_holdings":long_term_holdings,
         "gold_dates":json.dumps(dates, cls=DjangoJSONEncoder),
-        "gold_rates":json.dumps(rates)
-        })
+        "gold_rates":json.dumps(rates),
+        "has_gold_inv":has_gold_inv
+        }
+    return render(request,"dashboard.html",context)
 
 @login_required
 def InvestmentDeletionView(request,id):
